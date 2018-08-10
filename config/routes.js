@@ -1,6 +1,10 @@
 const axios = require('axios');
-
+const db = require('../database/dbConfig');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { authenticate } = require('./middlewares');
+
+const secret = 'Why can’t banks keep secrets? There are too many tellers!'
 
 module.exports = server => {
   server.post('/api/register', register);
@@ -10,10 +14,43 @@ module.exports = server => {
 
 function register(req, res) {
   // implement user registration
+  console.log(req.body)
+  const user = req.body;
+  console.log(user);
+  const hash = bcrypt.hashSync(user.password, 14);
+  user.password = hash;
+
+  db.insert(user)
+      .into('users')
+      .then(ids => {
+        db('users')
+          .where({id: ids[0] })
+          .first()
+          .then(user => {
+            const token = generateToken(user);
+            res.status(201).json(token);
+          })
+      })
+      .catch(err => {
+        res.status(500).json(err);
+      })
+
+}
+
+function generateToken(user){
+  const payload ={
+      username: user.username,
+  };
+
+  const options = {
+      expiresIn: '1h',
+  };
+  return jwt.sign(payload, secret, options);
 }
 
 function login(req, res) {
   // implement user login
+
 }
 
 function getJokes(req, res) {
