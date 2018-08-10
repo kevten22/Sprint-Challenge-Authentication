@@ -50,6 +50,23 @@ function generateToken(user){
 
 function login(req, res) {
   // implement user login
+  const credentials = req.body;
+
+  db('users')
+        .where({ username: credentials.username }).first()
+        .then(user => {
+            if (!user || !bcrypt.compareSync(credentials.password, user.password)) {
+                return res.status(401).json({ error: 'Incorrect credentials' });
+            }
+            else {
+                const token = generateToken(user);
+                res.status(201).json(token);
+            }
+        })
+    .catch(err => {
+        res.status(500).json(err);
+    })
+
 
 }
 
