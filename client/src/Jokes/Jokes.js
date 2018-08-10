@@ -11,11 +11,12 @@ class Jokes extends Component {
             <div className="Jokes">
                 <ul>
                     {this.state.jokes.map(joke =>
-                        <li key={joke.id}>
+                        <div key={joke.id}>
                             Type: {joke.type}
-                                 {joke.setup}
-                                 {joke.punchline}
-                        </li>)}
+                                  <br/>Joke: {joke.setup}
+                                  <br/>Punchline: {joke.punchline}
+                                  <br/>&nbsp;
+                        </div>)}
                 </ul>
             </div>
         );
